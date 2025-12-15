@@ -18,7 +18,7 @@ $(NAME): $(OBJS)
 
 $(BUILD_DIR)/%.o: %.cpp Makefile
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -I$(GLAD_INC) -c $< -o $@
 
 $(BUILD_DIR)/glad.o: $(GLAD_C) Makefile
 	@mkdir -p $(BUILD_DIR)
@@ -35,10 +35,13 @@ fclean: clean
 re: fclean
 	@make --no-print-directory
 
+run: all
+	@./$(NAME)
+
 debug: CFLAGS += $(DEBUG)
 debug: clean all
 
-.PHONY: all clean fclean re debug
+.PHONY: all clean fclean re debug run
 
 .gitignore: Makefile
 	@echo '.build' > .gitignore

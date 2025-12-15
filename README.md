@@ -29,7 +29,7 @@ Autres ressources utiles :
 
 ## État actuel du projet
 
-- [ ] Création de la fenêtre et du contexte OpenGL  
+- [x] Création de la fenêtre et du contexte OpenGL  
 - [ ] Affichage d’un triangle / cube de test  
 - [ ] Chargement d’un modèle `.obj` simple  
 - [ ] Contrôles de caméra / transformation  
