@@ -13,7 +13,8 @@ Il s’agit à la fois d’un projet de rendu 3D temps réel et d’un terrain d
 ## Stack technique
 
 - **Langage** : C++ (standard moderne).  
-- **API graphique** : OpenGL  
+- **API graphique** : OpenGL 3.3+ core-profile mode
+- **Fenêtre / contexte** : GLFW + GLAD
 
 L’architecture suit les concepts classiques des moteurs graphiques simples : objets, maillages, shaders, caméras, etc.
 
