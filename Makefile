@@ -1,9 +1,10 @@
 NAME = Scop
 CC = g++
-CFLAGS = -Wall -Wextra -Werror -MMD -MP -g3
+CFLAGS = -Wall -Wextra -Werror -MMD -MP -g3 -Isrcs/include
 LDFLAGS = -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 BUILD_DIR = .build
-SRCS = mainTRIANGLE
+SRCS_DIR = srcs
+SRCS = mainTRIANGLE shader
 CPPFILES = $(addsuffix .cpp, $(SRCS))
 GLAD_C = .deps/glad.c
 GLAD_INC = .deps
@@ -16,7 +17,7 @@ $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $@
 	@echo "\n$(NAME) is ready for use!\n"
 
-$(BUILD_DIR)/%.o: %.cpp Makefile
+$(BUILD_DIR)/%.o: $(SRCS_DIR)/%.cpp Makefile
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -I$(GLAD_INC) -c $< -o $@
 
