@@ -12,4 +12,4 @@ public:
     void bind(unsigned int unit = 0);
 };
 
-#endif
+#endif // TEXTURE_HPP
