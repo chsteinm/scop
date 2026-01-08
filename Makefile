@@ -4,10 +4,10 @@ CFLAGS = -Wall -Wextra -Werror -MMD -MP -g3 -Isrcs/include
 LDFLAGS = -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 BUILD_DIR = .build
 SRCS_DIR = srcs
-SRCS = main shader texture
+SRCS = main Shader Texture Model
 CPPFILES = $(addsuffix .cpp, $(SRCS))
 GLAD_C = .deps/glad.c
-GLAD_INC = .deps
+DEPS = .deps
 OBJS = $(addprefix $(BUILD_DIR)/,$(CPPFILES:.cpp=.o)) $(BUILD_DIR)/glad.o
 DEBUG = -D DEBUG=1
 
@@ -19,11 +19,11 @@ $(NAME): $(OBJS)
 
 $(BUILD_DIR)/%.o: $(SRCS_DIR)/%.cpp Makefile
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -I$(GLAD_INC) -c $< -o $@
+	$(CC) $(CFLAGS) -I$(DEPS) -c $< -o $@
 
 $(BUILD_DIR)/glad.o: $(GLAD_C) Makefile
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -I$(GLAD_INC) -c $< -o $@
+	$(CC) $(CFLAGS) -I$(DEPS) -c $< -o $@
 
 -include $(OBJS:.o=.d)
 

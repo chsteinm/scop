@@ -1,8 +1,4 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <iostream>
-#include <shader.hpp>
-#include <texture.hpp>
+#include <scop.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -37,48 +33,16 @@ int main() {
 
     // build and compile our shader program
     // ------------------------------------
-    Shader ourShader("srcs/shaders/4.2.texture.vs", "srcs/shaders/4.2.texture.fs");
+    Shader ourShader("srcs/shaders/5.1.transform.vs", "srcs/shaders/5.1.transform.fs");
+    // Shader ourShader("srcs/shaders/4.2.texture.vs", "srcs/shaders/4.2.texture.fs");
+
     if (ourShader.error) {
         glfwTerminate();
         return -1;
     }
 
-    // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
-    float vertices[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   2.0f, 2.0f, // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   2.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 2.0f  // top left 
-    };
-    unsigned int indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
+    // Model *model = new Model();
+    Model model;
 
     // load and create textures
     // -------------------------
@@ -93,7 +57,9 @@ int main() {
     // or set it via the texture class
     ourShader.setInt("texture2", 1);
 
-
+    // bind textures on corresponding texture units
+    texture1.bind(0);
+    texture2.bind(1);
 
     // render loop
     // -----------
@@ -108,13 +74,9 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // bind textures on corresponding texture units
-        texture1.bind(0);
-        texture2.bind(1);
 
         // render container
-        ourShader.use();
-        glBindVertexArray(VAO);
+        glBindVertexArray(model.VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -123,12 +85,8 @@ int main() {
         glfwPollEvents();
     }
 
-    // optional: de-allocate all resources once they've outlived their purpose:
-    // ------------------------------------------------------------------------
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-
     // glfwDestroyWindow(window);
+    // delete model;
     glfwTerminate();
     return 0;
 }
@@ -157,6 +115,16 @@ void processInput(GLFWwindow *window)
     glGetIntegerv(GL_CURRENT_PROGRAM, &shaderProgram);
     int offsetLocation = glGetUniformLocation(shaderProgram, "uOffset");
     glUniform2f(offsetLocation, offsetX, offsetY);
+    
+    // create transformations
+    glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+    transform = glm::translate(transform, glm::vec3(offsetX, offsetY, 0.0f));
+    transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // get matrix's uniform location and set matrix
+    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
 
     static float mixValue = 0.2f;
     if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
@@ -171,10 +139,16 @@ void processInput(GLFWwindow *window)
         if (mixValue <= 0.0f)
             mixValue = 0.0f;
     }
-    // set the uniform
+    // set the uniform texMixValue
     glGetIntegerv(GL_CURRENT_PROGRAM, &shaderProgram);
-    int mixLocation = glGetUniformLocation(shaderProgram, "mixValue");
-    glUniform1f(mixLocation, mixValue);
+    int texMixLocation = glGetUniformLocation(shaderProgram, "texMixValue");
+    glUniform1f(texMixLocation, mixValue);
+    
+    // activate/deactivate texture with transition to color
+    // if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+    // {
+
+    // }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
