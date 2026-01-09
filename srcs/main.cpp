@@ -109,24 +109,28 @@ void processInput(GLFWwindow *window)
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
 
-    static float mixValue = 0.2f;
+    static float texMixValue = 0.2f;
     if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
     {
-        mixValue += 0.005f;
-        if (mixValue >= 1.0f)
-            mixValue = 1.0f;
+        texMixValue += 0.005f;
+        if (texMixValue >= 1.0f)
+            texMixValue = 1.0f;
     }
     if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
     {
-        mixValue -= 0.005f;
-        if (mixValue <= 0.0f)
-            mixValue = 0.0f;
+        texMixValue -= 0.005f;
+        if (texMixValue <= 0.0f)
+            texMixValue = 0.0f;
     }
     // set the uniform texMixValue
-    glGetIntegerv(GL_CURRENT_PROGRAM, &shaderProgram);
+    // glGetIntegerv(GL_CURRENT_PROGRAM, &shaderProgram);
     int texMixLocation = glGetUniformLocation(shaderProgram, "texMixValue");
-    glUniform1f(texMixLocation, mixValue);
+    glUniform1f(texMixLocation, texMixValue);
     
+    float timeValue = glfwGetTime();
+    float colorMixValue = (sin(timeValue) / 2.0f) + 0.5f;
+    int colorMixLocation = glGetUniformLocation(shaderProgram, "colorMixValue");
+    glUniform1f(colorMixLocation, colorMixValue);
     // activate/deactivate texture with transition to color
     // if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
     // {
