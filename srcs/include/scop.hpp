@@ -13,5 +13,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <exception>
+
+#ifndef DEBUG
+#define DEBUG 0
+#endif
 
 #endif // SCOP_HPP

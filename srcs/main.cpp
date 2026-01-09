@@ -1,4 +1,5 @@
 #include <scop.hpp>
+#include <Window.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -8,40 +9,24 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 int main() {
-    if (!glfwInit()) {
-        return -1;
+    // initialize window and GL context through Window helper
+    Window window(SCR_WIDTH, SCR_HEIGHT, "SCOP");
+    if (!window.isValid()) {
+        return EXIT_FAILURE;
     }
-    
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "SCOP", NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-   
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
+    GLFWwindow* win = window.get();
+    glfwSetFramebufferSizeCallback(win, framebuffer_size_callback);
 
     // build and compile our shader program
     // ------------------------------------
-    Shader ourShader("srcs/shaders/5.1.transform.vs", "srcs/shaders/5.1.transform.fs");
     // Shader ourShader("srcs/shaders/4.2.texture.vs", "srcs/shaders/4.2.texture.fs");
-
+    Shader ourShader("srcs/shaders/5.1.transform.vs", "srcs/shaders/5.1.transform.fs");
     if (ourShader.error) {
         glfwTerminate();
-        return -1;
-    }
+        return EXIT_FAILURE;
+    }    // Model *model = new Model();
 
-    // Model *model = new Model();
+
     Model model;
 
     // load and create textures
@@ -63,11 +48,11 @@ int main() {
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(win))
     {
         // input
         // -----
-        processInput(window);
+        processInput(win);
 
         // render
         // ------
@@ -81,14 +66,12 @@ int main() {
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(win);
         glfwPollEvents();
     }
 
-    // glfwDestroyWindow(window);
-    // delete model;
-    glfwTerminate();
-    return 0;
+    // Window destructor will destroy the GLFW window and terminate
+    return EXIT_SUCCESS;
 }
 
 void processInput(GLFWwindow *window)
