@@ -8,7 +8,8 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-int main() {
+int main(int argc, char** argv) {
+    
     // initialize window and GL context through Window helper
     Window window(SCR_WIDTH, SCR_HEIGHT, "SCOP");
     if (!window.isValid()) {
